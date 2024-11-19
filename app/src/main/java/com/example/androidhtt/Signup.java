@@ -73,7 +73,8 @@ public class Signup extends AppCompatActivity {
         }
        dbHelper.addUser(name, email,password);
 
-
         Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(Signup.this, SignInActivity.class);
+        startActivity(intent);
     }
 }

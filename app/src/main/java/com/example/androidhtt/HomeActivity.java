@@ -27,13 +27,13 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
         databaseHelper = new DBHelper(this);
 
         if(databaseHelper.getAllProducts().isEmpty()){
-            databaseHelper.addProduct(new Product("Cheeseburger",R.drawable.pngwing_7, "Wendy's Burger", 4.5,45));
+            databaseHelper.addProduct(new Product("Cheeseburger", R.drawable.pngwing_7, "Wendy's Burger", 4.5,45));
             databaseHelper.addProduct(new Product("Hamburger",R.drawable.pngwing_7, "Veggie Burger", 4.9,50));
             databaseHelper.addProduct(new Product("Chicken Burger",R.drawable.pngwing_7, "Chicken Burger", 4.4,20));
             databaseHelper.addProduct(new Product("Fried Chicken Burger", R.drawable.pngwing_7,"Chicken Burger",5,30));

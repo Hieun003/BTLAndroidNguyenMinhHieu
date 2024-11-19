@@ -1,10 +1,161 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProductDetailActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:background="@color/white">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/main"
+        android:gravity="center"
+        >
+
+        <!-- Back and Search Icons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/back"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/back" />
+        </LinearLayout>
+
+        <!-- Burger Image -->
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/pngwing_7"
+            android:id="@+id/productImg"
+            android:scaleType="centerCrop"
+            android:contentDescription="Veggie Burger Image" />
+
+        <!-- Title and Rating -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hamburger Veggie Burger"
+            android:textSize="20sp"
+            android:id="@+id/productName"
+            android:textStyle="bold"
+            android:textAlignment="textStart"
+            android:paddingTop="8dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="start" >
+
+            <!-- Text trước ngôi sao -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.8"
+                android:id="@+id/rating"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+
+            <!-- Ngôi sao (icon vector) -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginHorizontal="4dp"
+                app:srcCompat="@android:drawable/btn_star_big_on" /> <!-- Tùy chỉnh màu sắc -->
+
+            <!-- Text sau ngôi sao -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="14 mins"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/productDecription"
+            android:text="Enjoy our delicious Hamburger Veggie Burger, made with a savory blend of fresh vegetables and herbs, topped with crisp lettuce, juicy tomatoes, and tangy pickles, all served on a soft, toasted bun."
+            android:textSize="20sp"
+            android:textAlignment="textStart"
+            android:paddingTop="8dp"
+            />
+
+
+        <!-- Portion Control -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="8dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/minus"
+                android:src="@drawable/baseline_exposure_neg_1_24"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Decrease Portion" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:id="@+id/quantity"
+                android:textSize="16sp"
+                android:paddingHorizontal="16dp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/plus"
+                android:src="@drawable/baseline_exposure_plus_1_24"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Increase Portion" />
+        </LinearLayout>
+
+        <!-- Price and Order Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="102dp"
+                android:layout_height="35dp"
+                android:backgroundTint="@color/red"
+                android:background="@drawable/radius"
+                android:gravity="center"
+                android:text="$9.99"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/order"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/black"
+                android:layout_margin="20dp"
+                android:background="@drawable/radius"
+                android:gravity="center"
+                android:text="ORDER NOW"
+                 />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

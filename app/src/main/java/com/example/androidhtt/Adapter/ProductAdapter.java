@@ -9,14 +9,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidhtt.Model.Product;
 import com.example.androidhtt.ProductDetailActivity;
 import com.example.androidhtt.R;
+import com.example.androidhtt.SignInActivity;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private Context context;
@@ -41,16 +44,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.tvProductCategory.setText(product.getCategory());
         holder.tvRating.setText(String.valueOf(product.getRating()));
         holder.imgProduct.setImageResource(product.getImageResId());
-
+        AtomicBoolean isFavorite = new AtomicBoolean(true);
         holder.ivFavorite.setOnClickListener(v ->{
-            Toast.makeText(context, product.getName() + " added to favorites", Toast.LENGTH_SHORT).show();
-            holder.ivFavorite.setImageResource(R.drawable.baseline_favorite_25);
+            if(isFavorite.get()){
+                Toast.makeText(context, product.getName() + " added to favorites", Toast.LENGTH_SHORT).show();
+                holder.ivFavorite.setImageResource(R.drawable.baseline_favorite_25);
+                isFavorite.set(false);
+            }
+            else{
+                Toast.makeText(context, product.getName() + " removed to favorites", Toast.LENGTH_SHORT).show();
+                holder.ivFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                isFavorite.set(true);
+            }
         });
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductDetailActivity.class);
             intent.putExtra("product_name",product.getName());
-            intent.putExtra("product_category",product.getCategory());
+            intent.putExtra("img_product",product.getImageResId());
+            intent.putExtra("product_rating",product.getRating());
             intent.putExtra("product_price",product.getPrice());
+            context.startActivity(intent);
         });
     }
     @Override

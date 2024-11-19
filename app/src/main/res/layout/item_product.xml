@@ -60,14 +60,14 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="4dp"
-                tools:srcCompat="@android:drawable/btn_star_big_on" />
+                app:srcCompat="@android:drawable/btn_star_big_on" />
 
             <ImageView
                 android:id="@+id/tvFavorite"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="16dp"
-                tools:srcCompat="@drawable/baseline_favorite_24" />
+                app:srcCompat="@drawable/baseline_favorite_border_24" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
