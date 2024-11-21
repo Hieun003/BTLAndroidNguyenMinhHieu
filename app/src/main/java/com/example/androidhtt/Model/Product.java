@@ -1,11 +1,14 @@
 package com.example.androidhtt.Model;
 
 public class Product {
+    int id;
     private String name;
     private String category;
     private double rating;
     private double price;
     private int imageResId;
+    private int quantity;
+    private double totalPrice;
 
     public Product(String category, int imageResId, String name, double rating, double price) {
         this.category = category;
@@ -13,6 +16,33 @@ public class Product {
         this.name = name;
         this.rating = rating;
         this.price = price;
+        this.quantity=1;
+    }
+    public Product(int id, String name, int imageResId, String category, double rating, double price, int quantity) {
+        this.id = id;
+        this.name = name;
+        this.imageResId = imageResId;
+        this.category = category;
+        this.rating = rating;
+        this.price = price;
+        this.quantity = quantity;
+    }
+    public Product(int id, String name, int imageResId, String category, double rating, double price) {
+        this.id = id;
+        this.name = name;
+        this.imageResId = imageResId;
+        this.category = category;
+        this.rating = rating;
+        this.price = price;
+        this.quantity=1;
+    }
+
+    public double getTotalPrice() {
+        return price*quantity;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public String getCategory() {
@@ -53,5 +83,21 @@ public class Product {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

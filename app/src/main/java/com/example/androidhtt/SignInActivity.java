@@ -63,8 +63,12 @@ public class SignInActivity extends AppCompatActivity {
             return;
         }
 
+
         // Check if email already exists
         if (dbHelper.checkAccountExists(name, password)) {
+            int userID = dbHelper.getUserIdByUserName(name);
+            String email = dbHelper.getEmailByUserId(userID);
+            dbHelper.saveUserInfo(this,userID,email,name);
             Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();

@@ -2,12 +2,12 @@ package com.example.androidhtt.DBHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.androidhtt.Model.Cart;
 import com.example.androidhtt.Model.Product;
 
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ public class DBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    // Kiểm tra user name
     public boolean checkUserExists(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + USER_NAME + " = ?" , new String[]{name});
@@ -49,6 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return exists;
     }
+    //Kiểm tra tài khoản đã tồn tại
     public boolean checkAccountExists(String name, String mk) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + USER_NAME + " = ? AND " + USER_PASSWORD + " = ?", new String[]{name, mk});
@@ -57,8 +59,53 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return exists;
     }
+    //Lấy mail từ bảng users
+    public String getEmailByUserId( int userId){
+        String email = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT email FROM " + TABLE_USERS + " WHERE " + USER_ID + " =?", new String[]{String.valueOf(userId)});
+        if(cursor != null && cursor.moveToFirst()){
+            email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
+        }
+        cursor.close();
+        db.close();
+        return email;
+    }
+    public int getUserIdByUserName( String userName){
+        int userId=-1;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_USERS + " WHERE " + USER_NAME + " =?", new String[]{userName});
+        if(cursor != null && cursor.moveToFirst()){
+            userId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+        }
+        cursor.close();
+        db.close();
+        return userId;
+    }
+    //Lưu thông tin người dùng
+    public void saveUserInfo(Context context, int userId, String email, String username) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("user_id", userId); // Lưu user_id
+        editor.putString("email", email); // Lưu email
+        editor.putString("username", username); // Lưu username
+        editor.apply(); // Lưu thay đổi
+    }
+    //Lấy thông tin
+    public int getUserId(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("user_id", -1); // -1 nếu không tìm thấy
+    }
 
+    public String getEmail(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("email", null); // null nếu không tìm thấy
+    }
 
+    public String getUsername(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("username", null); // null nếu không tìm thấy
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + " ("
@@ -122,12 +169,30 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public void addToCart(int productId, int userId, int quantity) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(CART_PRODUCT_ID, productId);
-        values.put(CART_USER_ID, userId);
-        values.put(CART_QUANTITY, quantity);
-        db.insert(TABLE_CART, null, values);
+        Cursor cursor = db.rawQuery("SELECT quantity FROM " + TABLE_CART +
+                        " WHERE userId = ? AND productId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(productId)});
+        if(cursor.moveToFirst()){
+            int existingQuantity = cursor.getColumnIndex(CART_QUANTITY);
+            int newexist = cursor.getInt(existingQuantity);
+
+            ContentValues values = new ContentValues();
+            values.put("quantity", newexist + quantity);
+            db.update(TABLE_CART, values, "userId = ? AND productId = ?",
+                    new String[]{String.valueOf(userId), String.valueOf(productId)});
+        }
+        else{
+            ContentValues values = new ContentValues();
+            values.put(CART_PRODUCT_ID, productId);
+            values.put(CART_USER_ID, userId);
+            values.put(CART_QUANTITY, quantity);
+            db.insert(TABLE_CART, null, values);
+        }
+        cursor.close();
         db.close();
+    }
+    public void deleteformCart(int productId, int userId){
+        SQLiteDatabase db = this.getWritableDatabase();
     }
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
@@ -136,6 +201,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
+                int idIndex = cursor.getColumnIndex(COLUMN_ID);
                 int nameIndex = cursor.getColumnIndex(COLUMN_NAME);
                 int categoryIndex = cursor.getColumnIndex(COLUMN_CATEGORY);
                 int ratingIndex = cursor.getColumnIndex(COLUMN_RATING);
@@ -144,6 +210,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
                 if (nameIndex != -1 && categoryIndex != -1 && ratingIndex != -1 && imageResIdIndex != -1) {
                     Product product = new Product(
+                            cursor.getInt(idIndex),
                             cursor.getString(nameIndex),
                             cursor.getInt(imageResIdIndex),
                             cursor.getString(categoryIndex),
@@ -158,30 +225,44 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return productList;
     }
-    public List<Cart> getAllCart() {
-        List<Cart> CartList = new ArrayList<>();
+    public List<Product> getAllCart(int userID) {
+        List<Product> cartItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_CART, null);
+
+        String query = "SELECT p.*, c.quantity FROM " + TABLE_PRODUCTS + " p " +
+                "INNER JOIN " + TABLE_CART + " c ON p.id = c.productId " +
+                "WHERE c.userId = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userID)});
 
         if (cursor.moveToFirst()) {
             do {
-                int productIdIndex = cursor.getColumnIndex(CART_PRODUCT_ID);
-                int userIdIndex = cursor.getColumnIndex(CART_USER_ID);
+                int idIndex = cursor.getColumnIndex(COLUMN_ID);
+                int nameIndex = cursor.getColumnIndex(COLUMN_NAME);
+                int categoryIndex = cursor.getColumnIndex(COLUMN_CATEGORY);
+                int ratingIndex = cursor.getColumnIndex(COLUMN_RATING);
+                int imageResIdIndex = cursor.getColumnIndex(COLUMN_IMAGE_RES_ID);
+                int priceIndex = cursor.getColumnIndex(COLUMN_PRICE);
                 int quantityIndex = cursor.getColumnIndex(CART_QUANTITY);
 
-                if (productIdIndex != -1 && userIdIndex != -1 && quantityIndex != -1) {
-                    // Create a Cart object and add it to the list
-                    Cart cart = new Cart(
-                            cursor.getInt(productIdIndex), // Product ID
-                            cursor.getInt(userIdIndex), // User ID
-                            cursor.getInt(quantityIndex) // Quantity
+                if (idIndex != -1 && quantityIndex != -1) {
+                    Product product = new Product(
+                            cursor.getInt(idIndex),
+                            cursor.getString(nameIndex),
+                            cursor.getInt(imageResIdIndex),
+                            cursor.getString(categoryIndex),
+                            cursor.getDouble(ratingIndex),
+                            cursor.getDouble(priceIndex),
+                            cursor.getInt(quantityIndex)
                     );
-                    CartList.add(cart);
+                    cartItems.add(product);
                 }
             } while (cursor.moveToNext());
+        } else {
+            Log.d("Cart Query", "No items found for userID: " + userID);
         }
+
         cursor.close();
         db.close();
-        return CartList;
+        return cartItems;
     }
 }

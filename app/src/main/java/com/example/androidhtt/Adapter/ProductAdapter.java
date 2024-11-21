@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.androidhtt.DBHelper.DBHelper;
 import com.example.androidhtt.Model.Product;
 import com.example.androidhtt.ProductDetailActivity;
 import com.example.androidhtt.R;
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private Context context;
     private List<Product> productList;
+    DBHelper dbHelper;
     public ProductAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
@@ -44,6 +46,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.tvProductCategory.setText(product.getCategory());
         holder.tvRating.setText(String.valueOf(product.getRating()));
         holder.imgProduct.setImageResource(product.getImageResId());
+
         AtomicBoolean isFavorite = new AtomicBoolean(true);
         holder.ivFavorite.setOnClickListener(v ->{
             if(isFavorite.get()){
@@ -55,6 +58,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 Toast.makeText(context, product.getName() + " removed to favorites", Toast.LENGTH_SHORT).show();
                 holder.ivFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
                 isFavorite.set(true);
+            }
+        });
+        holder.add.setOnClickListener(v -> {
+            dbHelper = new DBHelper(context);
+            int userID = dbHelper.getUserId(context);
+            if(userID != -1) {
+                dbHelper.addToCart(product.getId(),userID,1);
+                Toast.makeText(context, "Added to cart!", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(context, "User not logged in!", Toast.LENGTH_SHORT).show();
             }
         });
         holder.itemView.setOnClickListener(v -> {
@@ -71,7 +85,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgProduct, ivFavorite;
+        ImageView imgProduct, ivFavorite,add;
         TextView tvProductName, tvProductCategory, tvRating;
 
         public ProductViewHolder(@NonNull View itemView) {
@@ -81,6 +95,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             tvProductName = itemView.findViewById(R.id.tvProductName);
             tvProductCategory = itemView.findViewById(R.id.tvProductCategory);
             tvRating = itemView.findViewById(R.id.tvRating);
+            add = itemView.findViewById(R.id.add);
         }
     }
 }

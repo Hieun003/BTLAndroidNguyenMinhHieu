@@ -1,0 +1,104 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <!-- Item Image -->
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/pngwing_7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Item Name -->
+    <TextView
+        android:id="@+id/itemName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Kings Deal"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/itemImage"
+        app:layout_constraintEnd_toStartOf="@id/deleteButton"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Item Details -->
+    <TextView
+        android:id="@+id/itemDetails"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Size: Large  Variant: BBQ Beef"
+        android:textSize="20sp"
+        android:textColor="#808080"
+        app:layout_constraintTop_toBottomOf="@id/itemName"
+        app:layout_constraintStart_toStartOf="@id/itemName"
+        app:layout_constraintEnd_toEndOf="@id/itemName" />
+
+    <!-- Item Price -->
+    <TextView
+        android:id="@+id/itemPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$20.34"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/itemDetails"
+        app:layout_constraintStart_toStartOf="@id/itemDetails" />
+
+    <!-- Quantity Controls -->
+    <LinearLayout
+        android:id="@+id/quantityLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/itemPrice">
+
+        <!-- Decrease Button -->
+        <ImageButton
+            android:id="@+id/decreaseQuantity"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Decrease Quantity"
+            android:src="@drawable/baseline_exposure_neg_1_24" />
+
+        <!-- Quantity Text -->
+        <TextView
+            android:id="@+id/itemQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginHorizontal="8dp" />
+
+        <!-- Increase Button -->
+        <ImageButton
+            android:id="@+id/increaseQuantity"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Increase Quantity"
+            android:src="@drawable/baseline_exposure_plus_1_24" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/deleteButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@android:drawable/ic_delete"
+        android:contentDescription="Delete Item"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

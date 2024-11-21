@@ -66,8 +66,16 @@
                 android:id="@+id/tvFavorite"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="9dp"
                 app:srcCompat="@drawable/baseline_favorite_border_24" />
+
+            <ImageView
+                android:id="@+id/add"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="9dp"
+                tools:srcCompat="@android:drawable/ic_input_add" />
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
