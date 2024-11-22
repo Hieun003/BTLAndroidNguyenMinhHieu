@@ -193,6 +193,39 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public void deleteformCart(int productId, int userId){
         SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_CART, "userId = ? AND productId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(productId)});
+        db.close();
+    }
+    public void IncreaseQuantity(int productId, int userId, int quantity){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("quantity", quantity + 1);
+        db.update(TABLE_CART,values,"userId = ? AND productId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(productId)});
+        db.close();
+    }
+    public void DecreaseQuantity(int productId, int userId, int quantity){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("quantity", quantity - 1);
+        db.update(TABLE_CART,values,"userId = ? AND productId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(productId)});
+        db.close();
+    }
+    public double SubTotalPrice(int userId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(p.price * c.quantity) AS subtotal FROM " + TABLE_PRODUCTS + " p " +
+                "INNER JOIN " + TABLE_CART + " c ON p.id = c.productId " +
+                "WHERE c.userId = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+        double SubTotal = 0;
+        if(cursor != null && cursor.moveToFirst()){
+            SubTotal = cursor.getDouble(cursor.getColumnIndexOrThrow("subtotal"));
+        }
+        cursor.close();
+        db.close();
+        return  SubTotal;
     }
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();

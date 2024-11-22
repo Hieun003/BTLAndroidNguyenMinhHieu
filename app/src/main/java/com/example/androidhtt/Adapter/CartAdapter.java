@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,12 +23,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private Context context;
     private List<Product> cartList;
     DBHelper dbHelper;
+    private TextView subtotalValue, totalValue,deliveryValue;
 
-    public CartAdapter(Context context, List<Product> cartList) {
-        this.context = context;
+    public CartAdapter( Context context,List<Product> cartList, TextView deliveryValue, TextView subtotalValue, TextView totalValue) {
         this.cartList = cartList;
+        this.context = context;
+        this.deliveryValue = deliveryValue;
+        this.subtotalValue = subtotalValue;
+        this.totalValue = totalValue;
     }
 
+    public void updateCartItems(List<Product> newcartList) {
+        this.cartList = newcartList;
+    }
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -37,13 +45,76 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
+
         Product cartItem = cartList.get(position);
         holder.itemName.setText(cartItem.getName());
         holder.itemDetails.setText(cartItem.getCategory());
         holder.itemPrice.setText(String.valueOf(cartItem.getTotalPrice()));
         holder.itemImage.setImageResource(cartItem.getImageResId());
         holder.itemQuantity.setText(String.valueOf(cartItem.getQuantity()));
+        dbHelper = new DBHelper(context);
+        int userID = dbHelper.getUserId(context);
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userID != -1) {
+                    dbHelper.deleteformCart(cartItem.getId(),userID);
+                    Toast.makeText(context, "Removed to cart!", Toast.LENGTH_SHORT).show();
+                    refreshCart();
+                }
+                else{
+                    Toast.makeText(context, "User not logged in!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        holder.increaseQuantity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userID != -1) {
+                    dbHelper.IncreaseQuantity(cartItem.getId(),userID,cartItem.getQuantity());
+                    Toast.makeText(context, "Increase quantity!", Toast.LENGTH_SHORT).show();
+                    refreshCart();
+                }
+                else{
+                    Toast.makeText(context, "User not logged in!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        holder.decreaseQuantity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cartItem.getQuantity() == 1){
+                    return;
+                }else{
+                    if(userID != -1) {
+                        dbHelper.DecreaseQuantity(cartItem.getId(), userID, cartItem.getQuantity());
+                        Toast.makeText(context, "Decrease quantity!", Toast.LENGTH_SHORT).show();
+                        refreshCart();
+                    }
+                    else{
+                        Toast.makeText(context, "User not logged in!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+    private void refreshCart() {
 
+        dbHelper = new DBHelper(context);
+        int userID = dbHelper.getUserId(context);
+        List<Product> updatedCartList = dbHelper.getAllCart(userID);
+        updateCartItems(updatedCartList);
+        notifyDataSetChanged();
+
+        // Nếu có các thành phần khác như tổng giá, hãy cập nhật chúng ở đây
+        double subtotal = dbHelper.SubTotalPrice(userID);
+
+        double delivery = Double.parseDouble(deliveryValue.getText().toString().replace("$",""));
+
+        double total = subtotal + delivery;
+        subtotalValue.setText("$" + String.format("%.2f", subtotal));
+        String formattedtotal = "$" + String.format("%.2f", total);
+        totalValue.setText(formattedtotal);
     }
 
     @Override
